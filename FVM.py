@@ -91,8 +91,8 @@ def plot_stable_region(lam_sig_relation, ldt, save_plots, save_name, ax = None):
 	ax.plot([-4, 4], [0, 0], '-k');
 	Re = ldt.real;
 	Im = ldt.imag;
-	ax.scatter(Re, Im, color = 'red', marker = 'x', label = r'$\lambda \Delta t$');
-	ax.legend();
+	ax.scatter(Re, Im, color = 'red', marker = 'x', label = r'$\lambda \Delta t$', s = 4);
+	ax.legend(fontsize = 12);
 	if (save_plots): plt.savefig('%s.pdf'%(save_name), dpi = 300, bbox_inches = 'tight');
 	else: plt.tight_layout(pad = 0.4, w_pad = 0.5, h_pad = 1.0);
 	return 0;
@@ -133,9 +133,11 @@ def testConvergence(errFunc, N_range, alpha_range, args, save_plots, save_name):
 			err[i, j] = errFunc(N, alpha, *args);
 		ax.loglog(alpha_range, err[i, :], label = 'N = %i'%(N), linewidth = 0.75, markersize = 3.5);
 	# annotation.slope_marker((1.2, 0.05), expOrder, ax = ax);
-	ax.legend(loc = 'best');
-	ax.set_xlabel(r'$\alpha$ [-]', fontsize = 13);
-	ax.set_ylabel(r'$\varepsilon$ [-]', fontsize = 13);
+	ax.legend(loc = 'best', fontsize = 12);
+	ax.set_xlabel(r'$\alpha$ [-]', fontsize = 15);
+	ax.set_ylabel(r'$\varepsilon$ [-]', fontsize = 15);
+	ax.tick_params(axis = 'x', labelsize = 13);
+	ax.tick_params(axis = 'y', labelsize = 13);
 	ax.minorticks_on();
 	ax.grid(b = True, which = 'minor', color = '#999999', linestyle = '-', alpha = 0.2);
 	if (save_plots): plt.savefig('./FiguresPDF/%s.pdf'%(save_name), dpi = 300, bbox_inches = 'tight');

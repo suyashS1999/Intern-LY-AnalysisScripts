@@ -53,17 +53,37 @@ def solnVerif(N, alpha, nu, sigma, u0, tmax, fvSchemes, uExact_func):
 
 def Plot_amp_phase_err(beta, magSig, relPse, save_plots, save_name):
 	fig = plt.figure();
-	ax = fig.add_subplot(111);
-	ax.set_xlabel(r'$\beta$ [-]', fontsize = 13);
-	ax.set_ylabel(r'$\epsilon$ [-]', fontsize = 13);
-	ax.set_xlim((0, np.pi));
-	ax.grid(True);
+	ax1 = fig.add_subplot(111);
+	ax1.set_xlabel(r'$\beta$ [-]', fontsize = 13);
+	ax1.set_ylabel(r'$|\sigma|$ [-]', fontsize = 13);
+	ax1.tick_params(axis = 'x', labelsize = 13);
+	ax1.tick_params(axis = 'y', labelsize = 13);
+	ax1.set_xlim((0, np.pi));
+	ax1.grid(True);
+	ax1.set_prop_cycle(color = ['b', 'orange', 'r', 'k', 'm'],
+						marker = ['o', '+', 'x', '*', 's']);
 	plt.minorticks_on();
 	plt.grid(b = True, which = 'minor', color = '#999999', linestyle = '-', alpha = 0.2);
-	ax.plot(beta, magSig, '-bx', label = r'$|\sigma|$', linewidth = 0.75, markersize = 3);
-	ax.plot(beta[1:], relPse, '-ro', label = r'$\angle \rho_{rel}$', linewidth = 0.75, markersize = 3);
-	ax.legend(loc = 'lower left');
-	if (save_plots): plt.savefig('%s.pdf'%(save_name), dpi = 300, bbox_inches = 'tight');
+	ax1.plot(beta, magSig, linewidth = 0.75, markersize = 3);
+	# ax1.legend(loc = 'best', fontsize = 12);
+	if (save_plots): plt.savefig('%s_amp.pdf'%(save_name), dpi = 300, bbox_inches = 'tight');
+	else: plt.tight_layout(pad = 0.4, w_pad = 0.5, h_pad = 1.0);
+
+	fig = plt.figure();
+	ax2 = fig.add_subplot(111);
+	ax2.set_xlabel(r'$\beta$ [-]', fontsize = 13);
+	ax2.set_ylabel(r'$\angle \rho_{rel}$ [-]', fontsize = 13);
+	ax2.tick_params(axis = 'x', labelsize = 13);
+	ax2.tick_params(axis = 'y', labelsize = 13);
+	ax2.set_xlim((0, np.pi));
+	ax2.grid(True);
+	ax2.set_prop_cycle(color = ['b', 'orange', 'r', 'k', 'm'],
+						marker = ['o', '+', 'x', '*', 's']);
+	plt.minorticks_on();
+	plt.grid(b = True, which = 'minor', color = '#999999', linestyle = '-', alpha = 0.2);
+	ax2.plot(beta[1:], relPse, linewidth = 0.75, markersize = 3);
+	# ax2.legend(loc = 'best', fontsize = 12);
+	if (save_plots): plt.savefig('%s_pse.pdf'%(save_name), dpi = 300, bbox_inches = 'tight');
 	else: plt.tight_layout(pad = 0.4, w_pad = 0.5, h_pad = 1.0);
 	return 0;
 
@@ -72,13 +92,15 @@ def Plot_solution(x, u, t_idx, save_plots, save_name, uExact = None):
 	ax = fig.add_subplot(111);
 	ax.set_xlim([0.0, 1.0]);
 	ax.set_ylim([-0.01, 1.5]);
-	ax.set_xlabel(r'$x$', fontsize = 13);
-	ax.set_ylabel(r'$u$', fontsize = 13);
+	ax.set_xlabel(r'$x$', fontsize = 15);
+	ax.set_ylabel(r'$u$', fontsize = 15);
+	ax.tick_params(axis = 'x', labelsize = 13);
+	ax.tick_params(axis = 'y', labelsize = 13);
 	ax.grid(True);
 	plt.minorticks_on();
 	plt.grid(b = True, which = 'minor', color = '#999999', linestyle = '-', alpha = 0.2);
 	ax.plot(x, u[:, t_idx], '-', label = 'Numerical Solution', linewidth = 0.9, markersize = 2.5);
-	if isinstance(uExact, np.ndarray): ax.plot(xExact, uExact[:, t_idx], '--', alpha = 0.85, label = 'Exact Solution', linewidth = 1); ax.legend(loc = 'best');
+	if isinstance(uExact, np.ndarray): ax.plot(xExact, uExact[:, t_idx], '--', alpha = 0.85, label = 'Exact Solution', linewidth = 1); ax.legend(loc = 'best', fontsize = 12);
 	if (save_plots): plt.savefig('%s.pdf'%(save_name), dpi = 300, bbox_inches = 'tight');
 	else: plt.tight_layout(pad = 0.4, w_pad = 0.5, h_pad = 1.0);
 	return 0;

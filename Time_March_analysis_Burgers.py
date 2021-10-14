@@ -18,7 +18,7 @@ alphaTest = np.logspace(-1, np.log10(5), 10, base = 10);
 fvSchemes = {
 	'divScheme': FVM.Adv_mat_Burgers_Gauss_linear, 
 	'laplacianScheme': FVM.Diff_mat_Gauss_linear, 
-	'ddtScheme': ddt.BDF2
+	'ddtScheme': ddt.Crank_Nicolson
 };
 save_plots = False;
 #%% ------------------ Functions -------------------
