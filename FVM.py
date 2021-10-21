@@ -32,6 +32,13 @@ def Adv_mat_Gauss_linearUpwind(N):
 	return A;
 
 @functools.lru_cache(maxsize = None, typed = False)
+def Adv_mat_LUST(N):
+	A_GL = Adv_mat_Gauss_linear(N);
+	A_LU = Adv_mat_Gauss_linearUpwind(N);
+	A = 0.25*A_LU + 0.75*A_GL;
+	return A;
+
+@functools.lru_cache(maxsize = None, typed = False)
 def Adv_mat_Burgers_Gauss_linear(N):
 	A = Adv_mat_Gauss_linear(N);
 	phi = sp.diags(0.25*np.ones(N - 1, dtype = np.float64), offsets = 1, shape = (N, N), format = 'csr', dtype = np.float64) \
