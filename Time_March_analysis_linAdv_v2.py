@@ -20,9 +20,9 @@ NTest = 10*np.logspace(2, 4, 3, base = 2, dtype = int);
 alphaTest = np.logspace(-1, np.log10(5), 10, base = 10);
 save_plots = False;
 fvSchemes = {
-	'divScheme': [FVM.Adv_mat_Gauss_linearUpwind, FVM.Adv_mat_Gauss_linear, FVM.Adv_mat_LUST], 
+	'divScheme': [FVM.Adv_mat_Gauss_linear_with_artificial_diffusion, FVM.Adv_mat_LUST], 
 	'laplacianScheme': FVM.Diff_mat_Gauss_linear, 
-	'ddtScheme': ddt.BDF2
+	'ddtScheme': ddt.Crank_Nicolson
 };
 #%% --------------- Computed values ----------------
 xExact = np.linspace(0, 1, 500);		# mesh points for exact solution

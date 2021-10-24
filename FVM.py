@@ -12,6 +12,14 @@ def Adv_mat_Gauss_linear(N):
 	return A;
 
 @functools.lru_cache(maxsize = None, typed = False)
+def Adv_mat_Gauss_linear_with_artificial_diffusion(N, k = 0.1):
+	A = sp.diags(0.5*np.ones(N - 1, dtype = np.float64), offsets = 1, shape = (N, N), format = 'csr', dtype = np.float64) \
+	  + sp.diags(-0.5*np.ones(N - 1, dtype = np.float64), offsets = -1, shape = (N, N), format = 'csr', dtype = np.float64);
+	A += sp.csr_matrix(([-0.5, 0.5], ([0, N - 1], [N - 1, 0])), shape = (N, N));
+	A -= k*Diff_mat_Gauss_linear(N);
+	return A;
+
+@functools.lru_cache(maxsize = None, typed = False)
 def Adv_mat_Gauss_upwind(N):
 	A = sp.diags(np.ones(N, dtype = np.float64), offsets = 0, shape = (N, N), format = 'csr', dtype = np.float64) \
 	  + sp.diags(-1*np.ones(N - 1, dtype = np.float64), offsets = -1, shape = (N, N), format = 'csr', dtype = np.float64);
@@ -27,7 +35,7 @@ def Adv_mat_Gauss_linearUpwind(N):
 	# A = sp.diags(0.75*np.ones(N, dtype = np.float64), offsets = 0, shape = (N, N), format = 'csr', dtype = np.float64) \
 	#   + sp.diags(-1.25*np.ones(N - 1, dtype = np.float64), offsets = -1, shape = (N, N), format = 'csr', dtype = np.float64) \
 	#   + sp.diags(0.25*np.ones(N - 2, dtype = np.float64), offsets = -2, shape = (N, N), format = 'csr', dtype = np.float64) \
-	#   + sp.diags(0.25*np.ones(N - 1, dtype = np.float64), offsets = 1, shape = (N, N), format = 'csr', dtype = np.float64);
+	#   + sp.diags(0.25*np.ones(N - 1, dtype = nCrank_Nicolsonp.float64), offsets = 1, shape = (N, N), format = 'csr', dtype = np.float64);
 	# A += sp.csr_matrix(([-1.25, 0.25, 0.25, 0.25], ([0, 0, 1, N - 1], [N - 1, N - 2, N - 1, 0])), shape = (N, N));
 	return A;
 
@@ -57,6 +65,14 @@ def Adv_mat_Burgers_Gauss_upwind(N):
 def Adv_mat_Burgers_Gauss_linearUpwind(N):
 	A = Adv_mat_Gauss_linearUpwind(N);
 	phi = sp.diags(np.ones(N, dtype = np.float64), offsets = 0, shape = (N, N), format = 'csr', dtype = np.float64);
+	return A, phi;
+
+@functools.lru_cache(maxsize = None, typed = False)
+def Adv_mat_Burgers_LUST(N):
+	A_GL, phi_GL = Adv_mat_Burgers_Gauss_linear(N);
+	A_LU, phi_LU = Adv_mat_Burgers_Gauss_linearUpwind(N);
+	A = 0.25*A_LU + 0.75*A_GL;
+	phi = 0.25*phi_LU + 0.75*phi_GL;
 	return A, phi;
 
 @functools.lru_cache(maxsize = None, typed = False)

@@ -8,11 +8,11 @@ import TimeMarch as ddt
 import matplotlib.animation as pltani
 from mpltools import annotation
 #%% ------------------ Inputs ---------------------
-N = 100;									# Number of mesh points
+N = 200;									# Number of mesh points
 alpha = 0.5;								# CFL number c*dt/dx
 c = 1;									# Max Convection speed
-nu = 1e-3;								# Diffusion constant
-tmax = 0.5;								# Max simulation time
+nu = 1e-1;								# Diffusion constant
+tmax = 2;								# Max simulation time
 NTest = 10*np.logspace(2, 4, 3, base = 2, dtype = int);
 alphaTest = np.logspace(-1, np.log10(5), 10, base = 10);
 fvSchemes = {
@@ -31,8 +31,8 @@ S = lambda x, t: c*(nu*np.exp(-nu*t)*np.sin(2*np.pi*(t - x[:, np.newaxis])) - np
 manifacturedSoln = lambda x, t: c*np.exp(-nu*t)*np.sin(2*np.pi*(x[:, np.newaxis] - t));
 #%% ---------------- Run Analysis ------------------
 def runSim(N, alpha, nu, u0, S, tmax, fvSchemes):
-	x = np.linspace(0, 1, N);				# mesh points
-	dx = 1/(N - 1);							# dx
+	x = np.linspace(0, 2, N);				# mesh points
+	dx = 2/(N - 1);							# dx
 	dt = alpha*dx/c;						# Time step (dynamically changed throughout the simulation)
 	kdt = nu*dt/dx**2;						# nu*dt/dx^2
 	Ndt = int(tmax/dt);
@@ -40,7 +40,7 @@ def runSim(N, alpha, nu, u0, S, tmax, fvSchemes):
 	D = fvSchemes['laplacianScheme'](N);
 	ADt_func = lambda u, alpha_c, kdt: -alpha_c*A.multiply((phi@u)[:, np.newaxis]) + kdt*D;
 	# ldt = np.linalg.eigvals(-alpha*A.toarray() + kdt*D.toarray());
-	u, time = ddt.TimeMarch(u0(x), 0, dt, Ndt, fvSchemes['ddtScheme'], S = S, nonLin = True, updateFunc = ADt_func, nCorrector = 3, x = x, dx = 1/(N - 1), alpha = alpha, kdt = kdt);
+	u, time = ddt.TimeMarch(u0(x), 0, dt, Ndt, fvSchemes['ddtScheme'], S = S, nonLin = True, updateFunc = ADt_func, nCorrector = 3, x = x, dx = dx, alpha = alpha, kdt = kdt);
 	ldt = np.linalg.eigvals(ADt_func(u[:, 0], alpha, kdt).toarray());
 	return x, u, time, ldt;
 
@@ -51,11 +51,11 @@ def solnVerif(N, alpha, nu, u0, tmax, fvSchemes, manifacturedSoln, S):
 	return err;
 
 def main():
-	# x, u, time, ldt = runSim(N, alpha, nu, u0, S, tmax, fvSchemes);
-	# uExact = manifacturedSoln(x, time);
+	x, u, time, ldt = runSim(N, alpha, nu, u0, S, tmax, fvSchemes);
+	uExact = manifacturedSoln(x, time);
 	# FVM.plot_stable_region(sigma, ldt, False, '');
+	ddt.Animate(x, u, time, x, uExact, ylims = [-1.5, 1.5]);
 
-	# Animate(x, u, time, uExact);
 	# x, u, time, ldt = runSim(N, alpha, nu, u0, None, tmax, fvSchemes);
 	# FVM.plot_stable_region(sigma, ldt, False, '');
 	# ddt.Animate(x, u, time, ylims = [-1.5, 1.5]);
