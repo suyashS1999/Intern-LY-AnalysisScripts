@@ -11,8 +11,8 @@ from scipy import signal
 import os
 import re
 #%% ------------------ Inputs ---------------------
-N = 160;								# Number of mesh points
-alpha = 1.0;							# CFL number c*dt/dx
+N = 320;								# Number of mesh points
+alpha = 0.2;							# CFL number c*dt/dx
 c = 1.0;								# Convection speed
 nu = 0.00;								# Diffusion constant
 tmax = 0.5;								# Max time
@@ -20,9 +20,9 @@ NTest = 10*np.logspace(2, 4, 3, base = 2, dtype = int);
 alphaTest = np.logspace(-1, np.log10(5), 10, base = 10);
 save_plots = False;
 fvSchemes = {
-	'divScheme': [FVM.Adv_mat_Gauss_linear_with_artificial_diffusion, FVM.Adv_mat_LUST], 
+	'divScheme': [FVM.Adv_mat_Gauss_upwind, FVM.Adv_mat_Gauss_linearUpwind, FVM.Adv_mat_Gauss_linear], 
 	'laplacianScheme': FVM.Diff_mat_Gauss_linear, 
-	'ddtScheme': ddt.Crank_Nicolson
+	'ddtScheme': ddt.BDF1
 };
 #%% --------------- Computed values ----------------
 xExact = np.linspace(0, 1, 500);		# mesh points for exact solution
@@ -30,7 +30,7 @@ sigma = getattr(ddt, 'sigma_%s'%(fvSchemes['ddtScheme'].__name__));
 ddtSchemeName = fvSchemes['ddtScheme'].__name__;
 dirName = './FiguresPDF/%s'%(ddtSchemeName);
 if os.path.isdir(dirName) == False: os.makedirs(dirName);
-SimName = 'N_%i_alpha_%0.1f_nu_%0.2e_ddtScheme_%s'%(N, alpha, nu, ddtSchemeName);
+SimName = 'Bounded_N_%i_alpha_%0.1f_nu_%0.2e_ddtScheme_%s'%(N, alpha, nu, ddtSchemeName);
 u0 = lambda x: 0.5*(signal.square(2*np.pi*(x - 0.1), duty = 0.2) + 1);	# Initial condition
 uExact_func = lambda x, t: 0.5*(signal.square(2*np.pi*(x[:, np.newaxis] - 0.1 - c*t), duty = 0.2) + 1);
 #%% ---------------- Run Analysis ------------------
@@ -53,8 +53,8 @@ def solnVerif(N, alpha, nu, sigma, u0, tmax, fvSchemes, uExact_func):
 def Plot_amp_phase_err(beta, magSig_arr, relPse_arr, labels, save_plots, save_name):
 	fig = plt.figure();
 	ax1 = fig.add_subplot(111);
-	ax1.set_xlabel(r'$\beta$ [-]', fontsize = 13);
-	ax1.set_ylabel(r'$|\sigma|$ [-]', fontsize = 13);
+	ax1.set_xlabel(r'$\beta$ [-]', fontsize = 15);
+	ax1.set_ylabel(r'$\varepsilon_{|\sigma|}$ [-]', fontsize = 17);
 	ax1.tick_params(axis = 'x', labelsize = 13);
 	ax1.tick_params(axis = 'y', labelsize = 13);
 	ax1.set_xlim((0, np.pi));
@@ -70,8 +70,8 @@ def Plot_amp_phase_err(beta, magSig_arr, relPse_arr, labels, save_plots, save_na
 
 	fig = plt.figure();
 	ax2 = fig.add_subplot(111);
-	ax2.set_xlabel(r'$\beta$ [-]', fontsize = 13);
-	ax2.set_ylabel(r'$\angle \rho_{rel}$ [-]', fontsize = 13);
+	ax2.set_xlabel(r'$\beta$ [-]', fontsize = 15);
+	ax2.set_ylabel(r'$\varepsilon_{\angle \sigma}$ [-]', fontsize = 17);
 	ax2.tick_params(axis = 'x', labelsize = 13);
 	ax2.tick_params(axis = 'y', labelsize = 13);
 	ax2.set_xlim((0, np.pi));

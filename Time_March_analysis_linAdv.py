@@ -11,16 +11,16 @@ from scipy import signal
 import os
 import re
 #%% ------------------ Inputs ---------------------
-N = 160;								# Number of mesh points
-alpha = 1.0;							# CFL number c*dt/dx
-c = 1.0;								# Convection speed
+N = 320;								# Number of mesh points
+alpha = -1.0;							# CFL number c*dt/dx
+c = -1.0;								# Convection speed
 nu = 0.00;								# Diffusion constant
 tmax = 0.5;								# Max time
 NTest = 10*np.logspace(2, 4, 3, base = 2, dtype = int);
 alphaTest = np.logspace(-1, np.log10(5), 10, base = 10);
 save_plots = False;
 fvSchemes = {
-	'divScheme': FVM.Adv_mat_LUST, 
+	'divScheme': FVM.Adv_mat_Gauss_linearUpwind, 
 	'laplacianScheme': FVM.Diff_mat_Gauss_linear, 
 	'ddtScheme': ddt.BDF2
 };

@@ -3,6 +3,7 @@ import scipy.sparse as sp
 import scipy.sparse.linalg as la
 import functools
 import matplotlib.pyplot as plt
+from mpltools.annotation import slope_marker
 
 @functools.lru_cache(maxsize = None, typed = False)
 def Adv_mat_Gauss_linear(N):
@@ -128,8 +129,8 @@ def plot_stable_region2(lam_sig_relation, ldt_arr, labels, save_plots, save_name
 	if ax == None:
 		fig = plt.figure(figsize = (5, 5));
 		ax = fig.add_subplot(111);
-	ax.set_prop_cycle(color = ['b', 'orange', 'r'],
-						marker = ['o', '+', 'x']);
+	ax.set_prop_cycle(color = ['b', 'orange', 'r', 'k', 'm'],
+						marker = ['o', '+', 'x', '*', 's']);
 	ax.contourf(x, x, Rlevel, [1, 1000], hatches = ['//'], cmap = 'gray', alpha = 0.9);
 	ax.contour(x, x, Rlevel, [1, 1000]);
 	ax.set_xlabel(r'$Re(\lambda \Delta t)$', fontsize = 13);
@@ -154,14 +155,20 @@ def testConvergence(errFunc, N_range, alpha_range, args, save_plots, save_name):
 	for i, N in enumerate(N_range):
 		for j, alpha in enumerate(alpha_range):
 			err[i, j] = errFunc(N, alpha, *args);
-		ax.loglog(alpha_range, err[i, :], label = 'N = %i'%(N), linewidth = 0.75, markersize = 3.5);
+		ax.loglog(alpha_range, err[i, :], label = r'$N$ = %i'%(N), linewidth = 0.75, markersize = 3.5);
 	# annotation.slope_marker((1.2, 0.05), expOrder, ax = ax);
-	ax.legend(loc = 'best', fontsize = 12);
-	ax.set_xlabel(r'$\alpha$ [-]', fontsize = 15);
-	ax.set_ylabel(r'$\varepsilon$ [-]', fontsize = 15);
+	ax.legend(loc = 'best', fontsize = 13);
+	ax.set_xlabel(r'$\alpha$ [-]', fontsize = 16);
+	ax.set_ylabel(r'$\varepsilon$ [-]', fontsize = 16);
 	ax.tick_params(axis = 'x', labelsize = 13);
 	ax.tick_params(axis = 'y', labelsize = 13);
 	ax.minorticks_on();
+	# slope_marker((2., 0.003), (2, 1), invert = False);
+	# slope_marker((2., 0.0073), (1.5, 1), invert = False);
+	slope_marker((2., 0.0023), (1.5, 1), invert = False);
+	# slope_marker((0.4, 4.50e-5), (0.7, 1), invert = False);
+	# slope_marker((0.2, 3.17e-5), (0.7, 1), invert = False);
+	slope_marker((0.2, 3.4e-5), (0.7, 1), invert = False);
 	ax.grid(b = True, which = 'minor', color = '#999999', linestyle = '-', alpha = 0.2);
 	if (save_plots): plt.savefig('./FiguresPDF/%s.pdf'%(save_name), dpi = 300, bbox_inches = 'tight');
 	else: plt.tight_layout(pad = 0.4, w_pad = 0.5, h_pad = 1.0);
@@ -182,8 +189,8 @@ def plotOrdOfAcc(save_plots):
 	c, nu = 1., 0.1;
 	save_name = 'ordOfAccTest'
 	N_range = np.logspace(1, 3, 10, base = 10, dtype = int);
-	divSchemes = [Adv_mat_Gauss_linear, Adv_mat_Gauss_linearUpwind, Adv_mat_Gauss_upwind];
-	divSchemesName = ['Gauss linear', 'Gauss linearUpwind', 'Gauss upwind'];
+	divSchemes = [Adv_mat_Gauss_linear, Adv_mat_Gauss_linearUpwind, Adv_mat_Gauss_upwind, Adv_mat_LUST];
+	divSchemesName = ['Gauss linear', 'Gauss linearUpwind', 'Gauss upwind', 'LUST'];
 	fig = plt.figure();
 	ax = fig.add_subplot(111);
 	ax.set_prop_cycle(color = ['b', 'orange', 'r', 'k', 'm'],
@@ -208,7 +215,6 @@ if __name__ == '__main__':
 	import matplotlib
 	matplotlib.rcParams['mathtext.fontset'] = 'stix'
 	matplotlib.rcParams['font.family'] = 'STIXGeneral'
-	from mpltools.annotation import slope_marker
 	# N = 10;
 	# A = Adv_mat_Gauss_linear(N);
 	# D = Diff_mat_Gauss_linear(N);
@@ -219,5 +225,5 @@ if __name__ == '__main__':
 	# fig = plt.figure();
 	# ax = fig.add_subplot(111);
 	# ax.imshow(D.toarray());
-	plotOrdOfAcc(True);
+	plotOrdOfAcc(False);
 	plt.show();
